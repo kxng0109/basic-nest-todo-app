@@ -55,5 +55,13 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Prisma generated files(migration)
+# Prisma
+# SQLite database files
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# Migration lock file
+/prisma/migrations/migration_lock.toml
+
+# Generated Prisma Client
 generated/prisma
