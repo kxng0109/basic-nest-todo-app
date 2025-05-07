@@ -45,9 +45,11 @@ export class TodoService {
 		const { where, data } = params;
 		await this.getTodo(where);
 
-		const todo = await this.findTodo(data.title);
-		if(todo){
-			throw new BadRequestException("Todo exists")
+		if(data?.title){
+			const todo = await this.findTodo(data.title);
+			if(todo){
+				throw new BadRequestException("Todo exists")
+			}
 		}
 		
 		return this.prisma.todo.update({ where, data });

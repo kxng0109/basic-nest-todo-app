@@ -6,7 +6,7 @@ A simple **Todo List** REST API built with [NestJS](https://nestjs.com/), using 
 
 ## Prerequisites
 
-* **Node.js**
+* **Node.js** 
 * **npm** or **Yarn**
 
 ---
@@ -33,7 +33,7 @@ A simple **Todo List** REST API built with [NestJS](https://nestjs.com/), using 
    * Create a `.env` file in the root directory with the following content:
 
      ```env
-     DATABASE_URL="file:./prisma/dev.db"
+     DATABASE_URL="file:./dev.db"
      ```
 
    * Generate the Prisma client:
@@ -98,7 +98,7 @@ Validation is handled using `class-validator`.
 
     @IsBoolean()
     @IsOptional()
-    completed: boolean;
+    completed?: boolean;
   }
   ```
 
@@ -110,6 +110,14 @@ Validation is handled using `class-validator`.
 
   export class UpdateTodoDto extends PartialType(CreateTodoDto) {}
   ```
+
+Ensure the global `ValidationPipe` is enabled in `main.ts`:
+
+```ts
+app.useGlobalPipes(
+  new ValidationPipe({ whitelist: true }),
+);
+```
 
 ---
 
@@ -130,7 +138,7 @@ model Todo {
   id          Int      @default(autoincrement()) @id
   title       String   @unique
   description String?
-  completed   Boolean  @default(false)
+  completed   Boolean?  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -148,6 +156,53 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+```
+
+---
+
+## End-to-End Testing
+
+This project includes a suite of end-to-end (E2E) tests using [Pactum](https://pactumjs.github.io/) and Jest. These tests run against an isolated SQLite database defined in `.env.test`, ensuring your development data remains untouched.
+
+### Test Database Configuration
+
+1. Create or update the `.env.test` file at project root:
+
+   ```env
+   DATABASE_URL="file:./test.db"
+   ```
+2. No migrations are required for the test database; it will be synchronized to match the Prisma schema automatically.
+
+### NPM Scripts
+
+The following scripts have been added to `package.json`:
+
+```json
+{
+  "scripts": {
+    "pretest:e2e": "npx dotenv -e .env.test -- prisma db push",
+    "test:e2e": "npx dotenv -e .env.test -- jest --no-cache --config ./test/jest-e2e.json"
+  }
+}
+```
+
+* **`npm run pretest:e2e`**: Pushes the current Prisma schema into `test.db` (creating or resetting it).
+* **`npm run test:e2e`**: Loads `.env.test`, then runs the Jest E2E test suite without cache.
+
+### How the Test File Works
+
+The primary E2E spec lives in `test/app.e2e-spec.ts`. Key points:
+
+* **Bootstrapping**: A separate Nest application instance is started on port `3001` with global validation enabled.
+* **Database cleanup**: Before tests run, the `prisma.todo.deleteMany()` call clears any existing records.
+* **Pactum requests**: Tests use `pactum.spec()` to send HTTP requests to `/todo`, asserting on status codes, response bodies, and JSON matches.
+* **Path parameters and state**: The first created Todo ID is stored (`.stores('todoId', 'id')`) to parameterize subsequent GET, PATCH, and DELETE requests.
+
+To run the full suite, simply:
+
+```bash
+npm run pretest:e2e
+npm run test:e2e
 ```
 
 ---

@@ -1,12 +1,14 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
 } from '@nestjs/common';
 import { Todo as TodoModel } from 'generated/prisma';
 import { CreateTodoDto, UpdateTodoDto } from './dto';
@@ -39,6 +41,7 @@ export class TodoController {
 		return this.todoService.updateTodo({ where: {id}, data: updateTodoDto});
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete(':id')
 	async deleteTodo(@Param('id', ParseIntPipe) id: number) {
 		return this.todoService.deleteTodo({ id });

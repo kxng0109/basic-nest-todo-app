@@ -41,6 +41,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.test
 
 # temp directory
 .temp
@@ -59,6 +60,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # SQLite database files
 /prisma/dev.db
 /prisma/dev.db-journal
+/prisma/test.db
+/prisma/test.db-journal
 
 # Migration lock file
 /prisma/migrations/migration_lock.toml
