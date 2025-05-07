@@ -16,8 +16,8 @@ A simple **Todo List** REST API built with [NestJS](https://nestjs.com/), using 
 1. **Clone the repository**
 
    ```bash
-   git clone <repo-url>
-   cd <project-directory>
+   git clone https://github.com/kxng0109/basic-nest-todo-app.git
+   cd basic-nest-todo-app
    ```
 
 2. **Install dependencies**
